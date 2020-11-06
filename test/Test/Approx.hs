@@ -30,3 +30,5 @@ assertApprox a b =
 
 (@?~) :: (Show a, Approx a) => a -> a -> IO ()
 actual @?~ expected = assertApprox actual expected
+
+infix 1 @?~
