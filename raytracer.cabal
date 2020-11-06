@@ -15,14 +15,25 @@ maintainer:          nic.audinet27@gmail.com
 -- category:
 build-type:          Simple
 
+library
+  exposed-modules:
+    RayTracer.Color
+    RayTracer.Tuple
+  hs-source-dirs:
+    src
+  ghc-options:
+    -Wall
+    -Wno-partial-type-signatures
+  build-depends:
+      base >=4.12 && <4.13
+  default-language:
+    Haskell2010
+
 executable raytracer
   main-is:
     Main.hs
-  -- other-modules:
   build-depends:
     base >=4.12 && <4.13
-  hs-source-dirs:
-    src
   ghc-options:
     -Wall
     -Wno-partial-type-signatures
@@ -34,11 +45,17 @@ test-suite raytracer-test
     exitcode-stdio-1.0
   main-is:
     Test.hs
-  -- other-modules:
+  other-modules:
+    Test.Approx
+    Test.RayTracer.Color
+    Test.RayTracer.Tuple
   hs-source-dirs:
     test
   build-depends:
-    base >=4.12 && <4.13
+      base >=4.12 && <4.13
+    , raytracer
+    , tasty
+    , tasty-hunit
   ghc-options:
     -Wall
     -Wno-partial-type-signatures
