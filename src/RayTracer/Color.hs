@@ -1,11 +1,13 @@
 module RayTracer.Color where
 
 data Color = Color
-  { red :: Double
-  , green :: Double
-  , blue :: Double
+  { redComponent :: Double
+  , greenComponent :: Double
+  , blueComponent :: Double
   }
   deriving (Show, Eq)
+
+-- * Operations
 
 addColor :: Color -> Color -> Color
 addColor (Color r1 g1 b1) (Color r2 g2 b2) = Color (r1 + r2) (g1 + g2) (b1 + b2)
@@ -18,3 +20,20 @@ scaleColor (Color r g b) scalar = Color (r * scalar) (g * scalar) (b * scalar)
 
 mulColor :: Color -> Color -> Color
 mulColor (Color r1 g1 b1) (Color r2 g2 b2) = Color (r1 * r2) (g1 * g2) (b1 * b2)
+
+-- * Color shorthands
+
+black :: Color
+black = Color 0 0 0
+
+white :: Color
+white = Color 1 1 1
+
+red :: Color
+red = Color 1 0 0
+
+green :: Color
+green = Color 0 1 0
+
+blue :: Color
+blue = Color 0 0 1

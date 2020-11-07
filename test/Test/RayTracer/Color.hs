@@ -15,9 +15,9 @@ testColorBasic :: TestTree
 testColorBasic =
   let color = Color 0.2 0.4 0.6
   in testGroup "red, green and blue"
-    [ testCase "red" $ red color @?= 0.2
-    , testCase "green" $ green color @?= 0.4
-    , testCase "blue" $ blue color @?= 0.6
+    [ testCase "red" $ redComponent color @?= 0.2
+    , testCase "green" $ greenComponent color @?= 0.4
+    , testCase "blue" $ blueComponent color @?= 0.6
     ]
 
 testColorOperations :: TestTree
