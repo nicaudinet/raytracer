@@ -3,6 +3,7 @@ module RayTracer.Matrix where
 import RayTracer.Approx
 import RayTracer.Tuple
 
+-- * Matrix type and instances
 newtype Matrix = Matrix { unMatrix :: [[Double]] }
   deriving Show
 
@@ -12,6 +13,7 @@ instance Approx Matrix where
     then error "Comparing matrices of different sizes"
     else and $ zipWith approx (concat $ unMatrix m1) (concat $ unMatrix m2)
 
+-- * Helper Matrix operations
 
 extract :: Int -> Int -> Matrix -> Double
 extract r c (Matrix matrix) = (matrix !! r) !! c
@@ -23,11 +25,17 @@ width :: Matrix -> Int
 width (Matrix []) = 0
 width (Matrix (w:_)) = length w
 
+row :: Matrix -> Int -> [Double]
+row (Matrix m) n = m !! n
+
+col :: Matrix -> Int -> [Double]
+col (Matrix m) n = fmap (!! n) m
+
 rows :: Matrix -> [[Double]]
 rows = unMatrix
 
-row :: Matrix -> Int -> [Double]
-row (Matrix m) n = m !! n
+cols :: Matrix -> [[Double]]
+cols matrix = map (col matrix) [0 .. width matrix - 1]
 
 remove :: Int -> [a] -> [a]
 remove n list
@@ -37,14 +45,28 @@ remove n list
 removeRow :: Int -> Matrix -> Matrix
 removeRow n = Matrix . remove n . rows
 
-cols :: Matrix -> [[Double]]
-cols matrix = map (col matrix) [0 .. width matrix - 1]
-
-col :: Matrix -> Int -> [Double]
-col (Matrix m) n = fmap (!! n) m
-
 removeCol :: Int -> Matrix -> Matrix
 removeCol n = transpose . Matrix . remove n . cols
+
+mapMatrix :: (Double -> Double) -> Matrix -> Matrix
+mapMatrix f (Matrix matrix) = Matrix $ fmap (fmap f) matrix
+
+mapIndex :: ((Int, Int) -> Double) -> Int -> Int -> Matrix
+mapIndex f h w =
+  Matrix
+    [ [ f (r,c) | c <- [0 .. w - 1] ]
+    | r <- [0 .. h - 1]
+    ]
+
+-- * Matrix Operations
+
+identity :: Matrix
+identity = Matrix
+  [ [1, 0, 0, 0]
+  , [0, 1, 0, 0]
+  , [0, 0, 1, 0]
+  , [0, 0, 0, 1]
+  ]
 
 mulMatrix :: Matrix -> Matrix -> Matrix
 mulMatrix m1 m2 =
@@ -57,32 +79,24 @@ mulMatrix m1 m2 =
     | r <- [0 .. height m1 - 1]
     ]
 
+(|*|) :: Matrix -> Matrix -> Matrix
+m1 |*| m2 = mulMatrix m1 m2
+
+infixl 7 |*|
+
 mulTuple :: Matrix -> Tuple -> Tuple
 mulTuple matrix (Tuple w x y z) =
   let Matrix [[w'], [x'], [y'], [z']] =
         mulMatrix matrix (Matrix $ map (: []) [w,x,y,z])
   in Tuple w' x' y' z'
 
-identity :: Matrix
-identity = Matrix
-  [ [1, 0, 0, 0]
-  , [0, 1, 0, 0]
-  , [0, 0, 1, 0]
-  , [0, 0, 0, 1]
-  ]
+(|*) :: Matrix -> Tuple -> Tuple
+matrix |* tuple = mulTuple matrix tuple
+
+infixl 7 |*
 
 transpose :: Matrix -> Matrix
 transpose = Matrix . cols
-
-mapMatrix :: (Double -> Double) -> Matrix -> Matrix
-mapMatrix f (Matrix matrix) = Matrix $ fmap (fmap f) matrix
-
-mapIndex :: ((Int, Int) -> Double) -> Int -> Int -> Matrix
-mapIndex f h w =
-  Matrix
-    [ [ f (r,c) | c <- [0 .. w - 1] ]
-    | r <- [0 .. h - 1]
-    ]
 
 determinant :: Matrix -> Double
 determinant (Matrix []) =
@@ -114,3 +128,45 @@ invertible = not  . approx 0.0 . determinant
 inverse :: Matrix -> Matrix
 inverse matrix =
   mapMatrix (/ determinant matrix) . transpose . cofactors $ matrix
+
+-- * Matrix Transformations
+
+translation :: Double -> Double -> Double -> Matrix
+translation x y z = Matrix
+  [ [1, 0, 0, 0]
+  , [x, 1, 0, 0]
+  , [y, 0, 1, 0]
+  , [z, 0, 0 ,1]
+  ]
+
+scaling :: Double -> Double -> Double -> Matrix
+scaling x y z = Matrix
+  [ [1, 0, 0, 0]
+  , [0, x, 0, 0]
+  , [0, 0, y, 0]
+  , [0, 0, 0 ,z]
+  ]
+
+rotationX :: Double -> Matrix
+rotationX r = Matrix
+  [ [1, 0,     0,      0]
+  , [0, 1,     0,      0]
+  , [0, 0, cos r, -sin r]
+  , [0, 0, sin r,  cos r]
+  ]
+  
+rotationY :: Double -> Matrix
+rotationY r = Matrix
+  [ [1,      0, 0,     0]
+  , [0,  cos r, 0, sin r]
+  , [0,      0, 1,     0]
+  , [0, -sin r, 0, cos r]
+  ]
+  
+rotationZ :: Double -> Matrix
+rotationZ r = Matrix
+  [ [1,      0,     0, 0]
+  , [0, cos r, -sin r, 0]
+  , [0, sin r,  cos r, 0]
+  , [0,      0,     0, 1]
+  ]

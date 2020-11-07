@@ -11,6 +11,7 @@ tests = testGroup "Matrix"
   [ testMatrixConstruction
   , testMatrixOperations
   , testMatrixInversion
+  , testMatrixTransformations
   ]
 
 testMatrixConstruction :: TestTree
@@ -241,5 +242,32 @@ testMatrixInversion = testGroup "Inversion" $
             , [7,  0, 5, 4]
             , [6, -2, 0, 5]
             ]
-      in (m1 `mulMatrix` m2) `mulMatrix` (inverse m2) @?~ m1
+      in (m1 |*| m2) |*| (inverse m2) @?~ m1
+  ]
+
+testMatrixTransformations :: TestTree
+testMatrixTransformations = testGroup "Transformations"
+  [ testCase "Multiplying a point by a translation matrix" $
+      (translation 5 (-3) 2) |* (point (-3) 4 5) @?~ point 2 1 7
+  , testCase "Multiplying a point by the inverse of a translation matrix" $
+      (inverse $ translation 5 (-3) 2) |* (point (-3) 4 5) @?~ point (-8) 7 3
+  , testCase "Translation does not affect vectors" $
+      let vec = vector (-3) 4 5 in (translation 5 (-3) 2) |* vec @?~ vec
+  , testCase "Multiplying a point by a scaling matrix" $
+      (scaling 2 3 4) |* (point (-4) 6 8) @?~ point (-8) 18 32
+  , testCase "Multiplying a vector by a scaling matrix" $
+      (scaling 2 3 4) |* (vector (-4) 6 8) @?~ vector (-8) 18 32
+  , testCase "Multiplying a vector by the inverse of a scaling matrix" $
+      (inverse $ scaling 2 3 4) |* (vector (-4) 6 8) @?~ vector (-2) 2 2
+  , testCase "Reflection is scaling by a negative value" $
+      (scaling (-1) 1 1) |* (point 2 3 4) @?~ point (-2) 3 4
+  , testCase "Rotating a point around the x axis" $ do
+      (rotationX (pi / 4)) |* (point 0 1 0) @?~ point 0 (sqrt 2 / 2) (sqrt 2 / 2)
+      (rotationX (pi / 2)) |* (point 0 1 0) @?~ point 0 0 1
+  , testCase "Rotating a point around the y axis" $ do
+      (rotationY (pi / 4)) |* (point 0 0 1) @?~ point (sqrt 2 / 2) 0 (sqrt 2 / 2)
+      (rotationY (pi / 2)) |* (point 0 0 1) @?~ point 1 0 0
+  , testCase "Rotating a point around the z axis" $ do
+      (rotationZ (pi / 4)) |* (point 0 1 0) @?~ point (-(sqrt 2) / 2) (sqrt 2 / 2) 0
+      (rotationZ (pi / 2)) |* (point 0 1 0) @?~ point (-1) 0 0
   ]
