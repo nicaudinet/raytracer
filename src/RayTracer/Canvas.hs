@@ -68,3 +68,6 @@ canvasToPPM canvas@(Canvas pixels) =
 
     body :: [String]
     body = concat $ map (splitLine . unwords . map showColor) pixels
+
+savePPM :: String -> PPM -> IO ()
+savePPM filename (PPM image) = writeFile filename image
