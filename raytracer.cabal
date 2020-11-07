@@ -17,8 +17,10 @@ build-type:          Simple
 
 library
   exposed-modules:
+    RayTracer.Approx
     RayTracer.Canvas
     RayTracer.Color
+    RayTracer.Matrix
     RayTracer.Tuple
   hs-source-dirs:
     src
@@ -50,6 +52,7 @@ test-suite raytracer-test
   other-modules:
     Test.Approx
     Test.RayTracer.Canvas
+    Test.RayTracer.Matrix
     Test.RayTracer.Color
     Test.RayTracer.Tuple
   hs-source-dirs:

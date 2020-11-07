@@ -1,6 +1,7 @@
 module RayTracer.Tuple where
 
 import Prelude hiding (div)
+import RayTracer.Approx
 
 data Tuple = Tuple
   { tupleW :: Double
@@ -9,6 +10,10 @@ data Tuple = Tuple
   , tupleZ :: Double
   }
   deriving (Show, Eq)
+
+instance Approx Tuple where
+  approx (Tuple w1 x1 y1 z1) (Tuple w2 x2 y2 z2) =
+    (approx w1 w2) && (approx x1 x2) && (approx y1 y2) && (approx z1 z2)
 
 point :: Double -> Double -> Double -> Tuple
 point = Tuple 1.0

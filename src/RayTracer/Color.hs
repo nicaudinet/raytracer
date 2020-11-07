@@ -1,11 +1,17 @@
 module RayTracer.Color where
 
+import RayTracer.Approx
+
 data Color = Color
   { redComponent :: Double
   , greenComponent :: Double
   , blueComponent :: Double
   }
   deriving (Show, Eq)
+
+instance Approx Color where
+  approx (Color r1 g1 b1) (Color r2 g2 b2) =
+    (approx r1 r2) && (approx g1 g2) && (approx b1 b2)
 
 -- * Operations
 
