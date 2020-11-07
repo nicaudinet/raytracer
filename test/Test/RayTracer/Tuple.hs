@@ -16,7 +16,13 @@ tests = testGroup "Tuples"
 
 testTupleConstructors :: TestTree
 testTupleConstructors = testGroup "Constructors"
-  [ testCase "point" $
+  [ testCase "Tuple w, x, y, z" $ do
+      let tuple = Tuple 1 2 3 4
+      tupleW tuple @?= 1
+      tupleX tuple @?= 2
+      tupleY tuple @?= 3
+      tupleZ tuple @?= 4
+  , testCase "point" $
       point 4 (-4) 3 @?~ Tuple 1 4 (-4) 3
   , testCase "vector" $
       vector 4 (-4) 3 @?~ Tuple 0 4 (-4) 3

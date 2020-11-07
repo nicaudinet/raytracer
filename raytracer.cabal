@@ -34,7 +34,8 @@ executable raytracer
   main-is:
     Main.hs
   build-depends:
-    base >=4.12 && <4.13
+      base >=4.12 && <4.13
+    , raytracer
   ghc-options:
     -Wall
     -Wno-partial-type-signatures

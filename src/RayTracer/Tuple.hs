@@ -2,7 +2,12 @@ module RayTracer.Tuple where
 
 import Prelude hiding (div)
 
-data Tuple = Tuple Double Double Double Double
+data Tuple = Tuple
+  { tupleW :: Double
+  , tupleX :: Double
+  , tupleY :: Double
+  , tupleZ :: Double
+  }
   deriving (Show, Eq)
 
 point :: Double -> Double -> Double -> Tuple
