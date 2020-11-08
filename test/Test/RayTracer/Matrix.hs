@@ -270,4 +270,29 @@ testMatrixTransformations = testGroup "Transformations"
   , testCase "Rotating a point around the z axis" $ do
       (rotationZ (pi / 4)) |* (point 0 1 0) @?~ point (-(sqrt 2) / 2) (sqrt 2 / 2) 0
       (rotationZ (pi / 2)) |* (point 0 1 0) @?~ point (-1) 0 0
+  , testCase "A shearing transformation moves x in proportion to y" $
+      (shearing 1 0 0 0 0 0) |* (point 2 3 4) @?~ point 5 3 4
+  , testCase "A shearing transformation moves x in proportion to z" $
+      (shearing 0 1 0 0 0 0) |* (point 2 3 4) @?~ point 6 3 4
+  , testCase "A shearing transformation moves y in proportion to x" $
+      (shearing 0 0 1 0 0 0) |* (point 2 3 4) @?~ point 2 5 4
+  , testCase "A shearing transformation moves y in proportion to z" $
+      (shearing 0 0 0 1 0 0) |* (point 2 3 4) @?~ point 2 7 4
+  , testCase "A shearing transformation moves z in proportion to x" $
+      (shearing 0 0 0 0 1 0) |* (point 2 3 4) @?~ point 2 3 6
+  , testCase "A shearing transformation moves z in proportion to y" $
+      (shearing 0 0 0 0 0 1) |* (point 2 3 4) @?~ point 2 3 7
+  , testCase "Individual transformations applied in a sequence" $ do
+      let p = point 1 0 1
+          rotated = (rotationX (pi / 2)) |* p
+      rotated @?~ point 1 (-1) 0
+      let scaled = (scaling 5 5 5) |* rotated
+      scaled @?~ point 5 (-5) 0
+      let translated = (translation 10 5 7) |* scaled
+      translated @?~ point 15 0 7
+  , testCase "Chained transformations are applied in reverse order" $
+      let r = rotationX (pi / 2)
+          s = scaling 5 5 5
+          t = translation 10 5 7
+      in (t |*| s |*| r) |* (point 1 0 1) @?~ point 15 0 7
   ]
