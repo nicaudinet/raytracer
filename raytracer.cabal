@@ -21,6 +21,7 @@ library
     RayTracer.Canvas
     RayTracer.Color
     RayTracer.Matrix
+    RayTracer.Ray
     RayTracer.Tuple
   hs-source-dirs:
     src
@@ -52,8 +53,9 @@ test-suite raytracer-test
   other-modules:
     Test.Approx
     Test.RayTracer.Canvas
-    Test.RayTracer.Matrix
     Test.RayTracer.Color
+    Test.RayTracer.Matrix
+    Test.RayTracer.Ray
     Test.RayTracer.Tuple
   hs-source-dirs:
     test

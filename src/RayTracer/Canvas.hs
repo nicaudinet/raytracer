@@ -21,6 +21,13 @@ width :: Canvas -> Int
 width (Canvas []) = 0
 width (Canvas (w:_)) = (length w)
 
+grid :: Canvas -> [(Int, Int)]
+grid canvas =
+  [ (w,h)
+  | w <- [0 .. width canvas - 1]
+  , h <- [0 .. height canvas - 1]
+  ]
+
 mapCanvas :: (Color -> a) -> Canvas -> [[a]]
 mapCanvas f (Canvas canvas) = fmap (fmap f) canvas
 

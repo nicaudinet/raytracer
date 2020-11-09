@@ -5,6 +5,7 @@ import qualified Test.RayTracer.Tuple as Tuple
 import qualified Test.RayTracer.Color as Color
 import qualified Test.RayTracer.Canvas as Canvas
 import qualified Test.RayTracer.Matrix as Matrix
+import qualified Test.RayTracer.Ray as Ray
 
 main :: IO ()
 main = defaultMain tests
@@ -15,4 +16,5 @@ tests = testGroup "Tests"
   , Color.tests
   , Canvas.tests
   , Matrix.tests
+  , Ray.tests
   ]
