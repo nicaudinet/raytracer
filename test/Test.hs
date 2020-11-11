@@ -6,6 +6,8 @@ import qualified Test.RayTracer.Color as Color
 import qualified Test.RayTracer.Canvas as Canvas
 import qualified Test.RayTracer.Matrix as Matrix
 import qualified Test.RayTracer.Ray as Ray
+import qualified Test.RayTracer.Light as Light
+import qualified Test.RayTracer.Sphere as Sphere
 
 main :: IO ()
 main = defaultMain tests
@@ -17,4 +19,6 @@ tests = testGroup "Tests"
   , Canvas.tests
   , Matrix.tests
   , Ray.tests
+  , Light.tests
+  , Sphere.tests
   ]

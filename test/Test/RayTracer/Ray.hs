@@ -7,9 +7,19 @@ import Test.Tasty.HUnit
 import RayTracer.Matrix
 import RayTracer.Ray
 import RayTracer.Tuple
+import RayTracer.Sphere
 
 tests :: TestTree
 tests = testGroup "Ray"
+  [ testRayBasics
+  , testSphereIntersections
+  , testHits
+  , testRayTransformations
+  , testSphereTransformations
+  ]
+
+testRayBasics :: TestTree
+testRayBasics = testGroup "Ray Basics"
   [ testCase "Creating and querying a ray" $ do
       let orig = point 1 2 3
           dir = vector 4 5 6
@@ -22,7 +32,11 @@ tests = testGroup "Ray"
       position ray 1 @?~ point 3 3 4
       position ray (-1) @?~ point 1 3 4
       position ray 2.5 @?~ point 4.5 3 4
-  , testCase "A ray intersects a sphere at two points" $
+  ]
+
+testSphereIntersections :: TestTree
+testSphereIntersections = testGroup "Sphere Intersections"
+  [ testCase "A ray intersects a sphere at two points" $
       let sphere = defaultSphere
           ray = Ray (point 0 0 (-5)) (vector 0 0 1)
       in intersect sphere ray @?~
@@ -58,7 +72,11 @@ tests = testGroup "Ray"
       let intersection = Intersection (Object defaultSphere) 3.5
       time intersection @?~ 3.5
       object intersection @?~ Object defaultSphere
-  , testCase "The hit, when all intersections have positive t" $
+  ]
+
+testHits :: TestTree
+testHits = testGroup "Hits"
+  [ testCase "The hit, when all intersections have positive t" $
       let s = Object defaultSphere
           i1 = Intersection s 1
           i2 = Intersection s 2
@@ -80,7 +98,11 @@ tests = testGroup "Ray"
           i3 = Intersection s (-3)
           i4 = Intersection s 2
       in hit [i1, i2, i3, i4] @?~ Just i4
-  , testCase "Translating a ray" $ do
+  ]
+
+testRayTransformations :: TestTree
+testRayTransformations = testGroup "Ray Transformations"
+  [ testCase "Translating a ray" $ do
       let ray = Ray (point 1 2 3) (vector 0 1 0)
           m = translation 3 4 5
           ray2 = transform m ray
@@ -92,13 +114,11 @@ tests = testGroup "Ray"
           ray2 = transform m ray
       origin ray2 @?~ point 2 6 12
       direction ray2 @?~ vector 0 3 0
-  , testCase "A sphere's default transformation" $
-      transformation defaultSphere @?~ identity
-  , testCase "Changing a sphere's transformation" $
-      let t = translation 2 3 4
-          sphere = setTransformation t defaultSphere
-      in transformation sphere @?~ t
-  , testCase "Intersecting a scaled ray with a ray" $
+  ]
+
+testSphereTransformations :: TestTree
+testSphereTransformations = testGroup "Sphere Transformations"
+  [ testCase "Intersecting a scaled ray with a ray" $
       let ray = Ray (point 0 0 (-5)) (vector 0 0 1)
           sphere = setTransformation (scaling 2 2 2) defaultSphere
       in intersect sphere ray @?~

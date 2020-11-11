@@ -1,11 +1,12 @@
 module Main where
 
-import RayTracer.Approx
 import RayTracer.Tuple hiding (div)
 import RayTracer.Color
 import RayTracer.Canvas
 import RayTracer.Matrix hiding (height, width)
-import RayTracer.Ray
+import RayTracer.Ray as R
+import RayTracer.Sphere
+import RayTracer.Light
 
 data Projectile = Projectile
   { pos :: Tuple
@@ -58,8 +59,8 @@ clock =
     image = pointsToPPM (emptyCanvas 500 500) (map move [0 .. 11])
   in savePPM "images/clock.ppm" image
 
-sphereShadow :: IO ()
-sphereShadow = savePPM "images/sphere.ppm" (canvasToPPM image)
+sphere :: IO ()
+sphere = savePPM "images/sphere.ppm" (canvasToPPM image)
   where
     rayOrigin :: Tuple
     rayOrigin = point 0 0 (-5)
@@ -71,15 +72,22 @@ sphereShadow = savePPM "images/sphere.ppm" (canvasToPPM image)
     wallSize = 7
 
     canvasPixels :: Int
-    canvasPixels = 200
-
-    color :: Color
-    color = red
+    canvasPixels = 1000
 
     shape :: Sphere
     shape =
-      let t = shearing 1 0 0 0 0 0 |*| scaling 0.5 1 1
-      in setTransformation t defaultSphere
+      let t = shearing 1 0 0 0 0 0 |*| scaling 1 1 1 |*| translation 0 0 5
+          m = defaultMaterial { color = Color 0 0.2 1 }
+      in setTransformation t (setMaterial m defaultSphere)
+
+    lightPosition :: Tuple
+    lightPosition = point (-10) 10 (-10)
+
+    lightColor :: Color
+    lightColor = Color 1 1 1
+
+    light :: Light
+    light = pointLight lightPosition lightColor
 
     pixelSize :: Double
     pixelSize = wallSize / fromIntegral canvasPixels
@@ -106,9 +114,16 @@ sphereShadow = savePPM "images/sphere.ppm" (canvasToPPM image)
         ray = Ray rayOrigin (normalize (worldPixel `sub` rayOrigin))
         xs = intersect shape ray
       in
-        if hit xs /~ Nothing
-        then writePixel x y color canvas
-        else canvas
+        case hit xs of
+          Nothing -> canvas
+          Just intersection ->
+            let
+              p = R.position ray (time intersection)
+              normal = normalAt shape p
+              eye = neg (direction ray)
+              m = material . unObject . object $ intersection
+              c = lighting m light p eye normal
+            in writePixel x y c canvas
 
 main :: IO ()
-main = sphereShadow
+main = sphere

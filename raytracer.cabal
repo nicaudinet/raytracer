@@ -20,8 +20,10 @@ library
     RayTracer.Approx
     RayTracer.Canvas
     RayTracer.Color
+    RayTracer.Light
     RayTracer.Matrix
     RayTracer.Ray
+    RayTracer.Sphere
     RayTracer.Tuple
   hs-source-dirs:
     src
@@ -54,8 +56,10 @@ test-suite raytracer-test
     Test.Approx
     Test.RayTracer.Canvas
     Test.RayTracer.Color
+    Test.RayTracer.Light
     Test.RayTracer.Matrix
     Test.RayTracer.Ray
+    Test.RayTracer.Sphere
     Test.RayTracer.Tuple
   hs-source-dirs:
     test

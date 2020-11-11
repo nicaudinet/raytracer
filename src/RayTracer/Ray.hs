@@ -7,20 +7,13 @@ import Data.List (minimumBy)
 import RayTracer.Approx
 import RayTracer.Matrix
 import RayTracer.Tuple
+import RayTracer.Sphere
 
 data Ray = Ray
   { origin :: Tuple
   , direction :: Tuple
   }
   deriving Show
-
-newtype Sphere = Sphere { transformation :: Matrix }
-  deriving stock Show
-  deriving newtype Approx
-
-newtype Object = Object Sphere
-  deriving stock Show
-  deriving newtype Approx
 
 data Intersection = Intersection
   { object :: Object
@@ -32,15 +25,14 @@ instance Approx Intersection where
   approx (Intersection o1 t1) (Intersection o2 t2) =
     approx o1 o2 && approx t1 t2
 
-
 position :: Ray -> Double -> Tuple
 position (Ray orig dir) t = orig `add` (dir `mul` t)
 
 intersect :: Sphere -> Ray -> [Intersection]
-intersect sphere@(Sphere t) =
+intersect sphere =
     map (Intersection (Object sphere))
   . intersectUnitSphere
-  . transform (inverse t)
+  . transform (inverse (transformation sphere))
 
 intersectUnitSphere :: Ray -> [Double]
 intersectUnitSphere (Ray orig dir) =
@@ -68,9 +60,3 @@ hit intersections =
 
 transform :: Matrix -> Ray -> Ray
 transform matrix (Ray orig dir) = Ray (matrix |* orig) (matrix |* dir)
-
-defaultSphere :: Sphere
-defaultSphere = Sphere identity
-
-setTransformation :: Matrix -> Sphere -> Sphere
-setTransformation m (Sphere _sphere) = Sphere m
