@@ -8,6 +8,10 @@ data Light = Light
   { position :: Tuple
   , intensity :: Color
   }
+  deriving Show
+
+instance Approx Light where
+  approx (Light p1 i1) (Light p2 i2) = approx p1 p2 && approx i1 i2
 
 pointLight :: Tuple -> Color -> Light
 pointLight = Light

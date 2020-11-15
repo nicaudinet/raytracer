@@ -31,8 +31,8 @@ setMaterial :: Material -> Sphere -> Sphere
 setMaterial mat sphere = sphere { material = mat }
 
 -- The point is assumed to always be on the surface of the sphere
-normalAt :: Sphere -> Tuple -> Tuple
-normalAt sphere worldPoint =
+normalAt :: Object -> Tuple -> Tuple
+normalAt (Object sphere) worldPoint =
   let
     objectPoint = inverse (transformation sphere) |* worldPoint
     objectNormal = objectPoint `sub` (point 0 0 0)
@@ -42,4 +42,3 @@ normalAt sphere worldPoint =
       -- messed up the w value of the tuple
       Tuple 0 (tupleX worldNormal) (tupleY worldNormal) (tupleZ worldNormal)
   in normalize worldNormalVector
-

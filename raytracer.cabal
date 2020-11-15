@@ -8,7 +8,6 @@ version:             0.1.0.0
 -- description:
 -- bug-reports:
 -- license:
-license-file:        LICENSE
 author:              Nicolas Audinet
 maintainer:          nic.audinet27@gmail.com
 -- copyright:
@@ -18,6 +17,7 @@ build-type:          Simple
 library
   exposed-modules:
     RayTracer.Approx
+    RayTracer.Camera
     RayTracer.Canvas
     RayTracer.Color
     RayTracer.Light
@@ -25,6 +25,7 @@ library
     RayTracer.Ray
     RayTracer.Sphere
     RayTracer.Tuple
+    RayTracer.World
   hs-source-dirs:
     src
   ghc-options:
@@ -54,6 +55,7 @@ test-suite raytracer-test
     Test.hs
   other-modules:
     Test.Approx
+    Test.RayTracer.Camera
     Test.RayTracer.Canvas
     Test.RayTracer.Color
     Test.RayTracer.Light
@@ -61,6 +63,7 @@ test-suite raytracer-test
     Test.RayTracer.Ray
     Test.RayTracer.Sphere
     Test.RayTracer.Tuple
+    Test.RayTracer.World
   hs-source-dirs:
     test
   build-depends:
