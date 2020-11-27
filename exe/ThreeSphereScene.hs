@@ -5,15 +5,16 @@ import RayTracer.Canvas
 import RayTracer.Color
 import RayTracer.Light
 import RayTracer.Matrix
-import RayTracer.Sphere
+import RayTracer.Shape.Sphere
 import RayTracer.Tuple
 import RayTracer.World
+import RayTracer.Ray
 
 wallMaterial :: Material
 wallMaterial = defaultMaterial { color = Color 1 0.9 0.9 , specular = 0 }
 
 floorSphere :: Sphere
-floorSphere = Sphere (scaling 10 0.01 10) wallMaterial
+floorSphere = sphere (scaling 10 0.01 10) wallMaterial
 
 leftWallTransform :: Matrix
 leftWallTransform
@@ -23,7 +24,7 @@ leftWallTransform
   |*| scaling 10 0.01 10
 
 leftWall :: Sphere
-leftWall = Sphere leftWallTransform wallMaterial
+leftWall = sphere leftWallTransform wallMaterial
 
 rightWallTransform :: Matrix
 rightWallTransform
@@ -33,7 +34,7 @@ rightWallTransform
   |*| scaling 10 0.01 10
 
 rightWall :: Sphere
-rightWall = Sphere rightWallTransform wallMaterial
+rightWall = sphere rightWallTransform wallMaterial
 
 middleSphereMaterial :: Material
 middleSphereMaterial = defaultMaterial
@@ -43,7 +44,7 @@ middleSphereMaterial = defaultMaterial
   }
 
 middleSphere :: Sphere
-middleSphere = Sphere (translation (-0.5) 1 0.5) middleSphereMaterial
+middleSphere = sphere (translation (-0.5) 1 0.5) middleSphereMaterial
 
 rightSphereTransform :: Matrix
 rightSphereTransform = translation 1.5 0.5 (-0.5) |*| scaling 0.5 0.5 0.5
@@ -56,7 +57,7 @@ rightSphereMaterial = defaultMaterial
   }
 
 rightSphere :: Sphere
-rightSphere = Sphere rightSphereTransform rightSphereMaterial
+rightSphere = sphere rightSphereTransform rightSphereMaterial
 
 leftSphereTransform :: Matrix
 leftSphereTransform =
@@ -70,7 +71,7 @@ leftSphereMaterial = defaultMaterial
   }
 
 leftSphere :: Sphere
-leftSphere = Sphere leftSphereTransform leftSphereMaterial
+leftSphere = sphere leftSphereTransform leftSphereMaterial
 
 light :: Light
 light = pointLight (point (-10) 10 (-10)) (Color 1 1 1)

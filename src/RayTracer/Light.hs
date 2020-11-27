@@ -42,12 +42,18 @@ defaultMaterial = Material
   , shininess = 200.0
   }
 
+data Shadow = InShadow | NotInShadow
+  deriving (Show, Eq)
+
 reflect :: Tuple -> Tuple -> Tuple
 reflect vec normal = vec `sub` (normal `mul` 2 `mul` (dot vec normal))
 
-lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Color
-lighting m light p eye normal =
-  ambientContrib `addColor` diffuseContrib `addColor` specularContrib
+lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Shadow -> Color
+lighting m light p eye normal shadow =
+  case shadow of
+    InShadow -> ambientContrib
+    NotInShadow ->
+      ambientContrib `addColor` diffuseContrib `addColor` specularContrib
   where
     effectiveColor :: Color
     effectiveColor = (color m) `mulColor` (intensity light)

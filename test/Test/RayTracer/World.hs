@@ -9,7 +9,7 @@ import RayTracer.Light
 import RayTracer.Tuple
 import RayTracer.Matrix
 import RayTracer.Color
-import RayTracer.Sphere
+import RayTracer.Shape.Sphere
 import RayTracer.Ray
 
 tests :: TestTree
@@ -17,6 +17,7 @@ tests = testGroup "World"
   [ testWorldBasics
   , testWorldIntersections
   , testWorldView
+  , testWorldShadows
   ]
 
 testWorldBasics :: TestTree
@@ -33,7 +34,7 @@ testWorldBasics = testGroup "Basics"
           , specular = 0.2
           }
         sphere1 = Object (setMaterial material1 defaultSphere)
-        sphere2 = Object (setTransformation (scaling 0.5 0.5 0.5) defaultSphere)
+        sphere2 = Object (setTransform (scaling 0.5 0.5 0.5) defaultSphere)
       objects defaultWorld @?~ [sphere1, sphere2]
       lightSource defaultWorld @?~ Just light
   ]
@@ -79,7 +80,7 @@ testWorldIntersections = testGroup "Intersections"
           shape = objects world !! 1
           i = Intersection shape 0.5
           comp = prepareComputations i ray
-      in shadeHit world comp @?~ Color 0.90498 0.90498 0.90498
+      in shadeHit world comp @?~ Color 0.1 0.1 0.1
   , testCase "The color when a ray misses" $
       let ray = Ray (point 0 0 (-5)) (vector 0 1 0)
       in colorAt defaultWorld ray @?~ Color 0 0 0
@@ -87,17 +88,17 @@ testWorldIntersections = testGroup "Intersections"
       let ray = Ray (point 0 0 (-5)) (vector 0 0 1)
       in colorAt defaultWorld ray @?~ Color 0.38066 0.47583 0.2855
   , testCase "The color with an intersection behind the ray" $
-      let defOuterSphere = unObject (objects defaultWorld !! 0)
-          outerSphereMaterial = (material defOuterSphere) { ambient = 1 }
-          outerSphere = defOuterSphere { material = outerSphereMaterial }
-          defInnerSphere = unObject (objects defaultWorld !! 1)
-          innerSphereMaterial = (material defInnerSphere) { ambient = 1}
-          innerSphere = defInnerSphere { material = innerSphereMaterial }
-          world =
-            World
-              [Object outerSphere, Object innerSphere]
-              (lightSource defaultWorld)
-          ray = Ray (point 0 0 0.75) (vector 0 0 (-1))
+      let
+        defOuterSphere = objects defaultWorld !! 0
+        outerSphereMaterial = (material defOuterSphere) { ambient = 1 }
+        outerSphere = setMaterial outerSphereMaterial defOuterSphere
+      --
+        defInnerSphere = objects defaultWorld !! 1
+        innerSphereMaterial = (material defInnerSphere) { ambient = 1}
+        innerSphere = setMaterial innerSphereMaterial defInnerSphere
+      --
+        world = World [outerSphere, innerSphere] (lightSource defaultWorld)
+        ray = Ray (point 0 0 0.75) (vector 0 0 (-1))
       in colorAt world ray @?~ color innerSphereMaterial
   ]
 
@@ -128,4 +129,33 @@ testWorldView = testGroup "View"
           , [-2.82843,  0.76772, 0.60609,  0.12122]
           , [       0, -0.35857, 0.59761, -0.71714]
           ]
+  ]
+
+testWorldShadows :: TestTree
+testWorldShadows = testGroup "Shadows"
+  [ testCase "There is no shadow when nothing is collinear with point and light" $
+      isShadowed defaultWorld (point 0 10 0) @?= NotInShadow
+  , testCase "The shadow when an object is between the point and the light" $
+      isShadowed defaultWorld (point 10 (-10) 10) @?= InShadow
+  , testCase "There is no shadow when an object is behind the light" $
+      isShadowed defaultWorld (point (-20) 20 (-20)) @?= NotInShadow
+  , testCase "There is no shadow when an object is behind the point" $
+      isShadowed defaultWorld (point (-2) 2 (-2)) @?= NotInShadow
+  , testCase "shadeHit is given an intersection in shadow" $
+      let
+        light = pointLight (point 0 0 (-10)) (Color 1 1 1)
+        sphere1 = Object defaultSphere
+        sphere2 = Object (setTransform (translation 0 0 10) defaultSphere)
+        world = World [sphere1, sphere2] (Just light)
+        ray = Ray (point 0 0 5) (vector 0 0 1)
+        i = Intersection (Object sphere2) 4
+        comps = prepareComputations i ray
+      in shadeHit world comps @?~ Color 0.1 0.1 0.1
+  , testCase "The hit should offset the point" $ do
+      let ray = Ray (point 0 0 (-5)) (vector 0 0 1)
+          s = setTransform (translation 0 0 1) defaultSphere
+          i = Intersection (Object s) 5
+          comps = prepareComputations i ray
+      tupleZ (compOverPoint comps) < (-epsilon) / 2 @?= True
+      tupleZ (compPoint comps) > tupleZ (compOverPoint comps) @?= True
   ]

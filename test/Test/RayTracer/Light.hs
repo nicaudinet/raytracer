@@ -52,25 +52,30 @@ testLighting =
           let eye = vector 0 0 (-1)
               normal = vector 0 0 (-1)
               light = pointLight (point 0 0 (-10)) (Color 1 1 1)
-          in lighting m light p eye normal @?~ Color 1.9 1.9 1.9
+          in lighting m light p eye normal NotInShadow @?~ Color 1.9 1.9 1.9
       , testCase "Lighting with the eye between light and surface 45 degree offset" $
           let eye = vector 0 (sqrt 2 / 2) (sqrt 2 / 2)
               normal = vector 0 0 (-1)
               light = pointLight (point 0 0 (-10)) (Color 1 1 1)
-          in lighting m light p eye normal @?~ Color 1 1 1
+          in lighting m light p eye normal NotInShadow @?~ Color 1 1 1
       , testCase "Lighting with eye opposite surface, light offset 45 degrees" $
           let eye = vector 0 0 (-1)
               normal = vector 0 0 (-1)
               light = pointLight (point 0 10 (-10)) (Color 1 1 1)
-          in lighting m light p eye normal @?~ Color 0.7364 0.7364 0.7364
+          in lighting m light p eye normal NotInShadow @?~ Color 0.7364 0.7364 0.7364
       , testCase "Lighting with eye in the path of the reflection vector" $
           let eye = vector 0 (-(sqrt 2) / 2) (-(sqrt 2) / 2)
               normal = vector 0 0 (-1)
               light = pointLight (point 0 10 (-10)) (Color 1 1 1)
-          in lighting m light p eye normal @?~ Color 1.6364 1.6364 1.6364
+          in lighting m light p eye normal NotInShadow @?~ Color 1.6364 1.6364 1.6364
       , testCase "Lighting with the light behind the surface" $
           let eye = vector 0 0 (-1)
               normal = vector 0 0 (-1)
               light = pointLight (point 0 0 10) (Color 1 1 1)
-          in lighting m light p eye normal @?~ Color 0.1 0.1 0.1
+          in lighting m light p eye normal NotInShadow @?~ Color 0.1 0.1 0.1
+      , testCase "Lighting with the surface in shadow" $
+          let eye = vector 0 0 (-1)
+              normal = vector 0 0 (-1)
+              light = pointLight (point 0 0 (-10)) (Color 1 1 1)
+          in lighting m light p eye normal InShadow @?~ Color 0.1 0.1 0.1
       ]

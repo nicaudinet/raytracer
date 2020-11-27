@@ -23,7 +23,7 @@ library
     RayTracer.Light
     RayTracer.Matrix
     RayTracer.Ray
-    RayTracer.Sphere
+    RayTracer.Shape.Sphere
     RayTracer.Tuple
     RayTracer.World
   hs-source-dirs:
@@ -120,6 +120,7 @@ test-suite raytracer-test
     Test.RayTracer.Light
     Test.RayTracer.Matrix
     Test.RayTracer.Ray
+    Test.RayTracer.Shape
     Test.RayTracer.Sphere
     Test.RayTracer.Tuple
     Test.RayTracer.World

@@ -7,7 +7,7 @@ import Test.Tasty.HUnit
 import RayTracer.Matrix
 import RayTracer.Ray
 import RayTracer.Tuple
-import RayTracer.Sphere
+import RayTracer.Shape.Sphere
 
 tests :: TestTree
 tests = testGroup "Ray"
@@ -37,36 +37,36 @@ testRayBasics = testGroup "Ray Basics"
 testSphereIntersections :: TestTree
 testSphereIntersections = testGroup "Sphere Intersections"
   [ testCase "A ray intersects a sphere at two points" $
-      let sphere = defaultSphere
+      let s = Object defaultSphere
           ray = Ray (point 0 0 (-5)) (vector 0 0 1)
-      in intersect sphere ray @?~
-          [ Intersection (Object sphere) 4.0
-          , Intersection (Object sphere) 6.0
+      in localIntersect s ray @?~
+          [ Intersection s 4.0
+          , Intersection s 6.0
           ]
   , testCase "A ray intersects a sphere at a tangent" $
-      let sphere = defaultSphere
+      let s = Object defaultSphere
           ray = Ray (point 0 1 (-5)) (vector 0 0 1)
-      in intersect sphere ray @?~
-          [ Intersection (Object sphere) 5.0
-          , Intersection (Object sphere) 5.0
+      in localIntersect s ray @?~
+          [ Intersection s 5.0
+          , Intersection s 5.0
           ]
   , testCase "A ray misses a sphere" $
-      let sphere = defaultSphere
+      let s = Object defaultSphere
           ray = Ray (point 0 2 (-5)) (vector 0 0 1)
-      in intersect sphere ray @?~ []
+      in localIntersect s ray @?~ []
   , testCase "A ray originates inside a sphere" $
-      let sphere = defaultSphere
+      let s = Object defaultSphere
           ray = Ray (point 0 0 0) (vector 0 0 1)
-      in intersect sphere ray @?~
-          [ Intersection (Object sphere) (-1.0)
-          , Intersection (Object sphere) 1.0
+      in localIntersect s ray @?~
+          [ Intersection s (-1.0)
+          , Intersection s 1.0
           ]
   , testCase "A sphere is behind a ray" $
-      let sphere = defaultSphere
+      let s = Object defaultSphere
           ray = Ray (point 0 0 5) (vector 0 0 1)
-      in intersect sphere ray @?~
-          [ Intersection (Object sphere) (-6.0)
-          , Intersection (Object sphere) (-4.0)
+      in localIntersect s ray @?~
+          [ Intersection s (-6.0)
+          , Intersection s (-4.0)
           ]
   , testCase "An intersection encapsulates t and object" $ do
       let intersection = Intersection (Object defaultSphere) 3.5
@@ -105,13 +105,13 @@ testRayTransformations = testGroup "Ray Transformations"
   [ testCase "Translating a ray" $ do
       let ray = Ray (point 1 2 3) (vector 0 1 0)
           m = translation 3 4 5
-          ray2 = transform m ray
+          ray2 = transformRay m ray
       origin ray2 @?~ point 4 6 8
       direction ray2 @?~ vector 0 1 0
   , testCase "Scaling a ray" $ do
       let ray = Ray (point 1 2 3) (vector 0 1 0)
           m = scaling 2 3 4
-          ray2 = transform m ray
+          ray2 = transformRay m ray
       origin ray2 @?~ point 2 6 12
       direction ray2 @?~ vector 0 3 0
   ]
@@ -120,13 +120,13 @@ testSphereTransformations :: TestTree
 testSphereTransformations = testGroup "Sphere Transformations"
   [ testCase "Intersecting a scaled ray with a ray" $
       let ray = Ray (point 0 0 (-5)) (vector 0 0 1)
-          sphere = setTransformation (scaling 2 2 2) defaultSphere
-      in intersect sphere ray @?~
-          [ Intersection (Object sphere) 3
-          , Intersection (Object sphere) 7
+          s = Object (setTransform (scaling 2 2 2) defaultSphere)
+      in intersect s ray @?~
+          [ Intersection s 3
+          , Intersection s 7
           ]
   , testCase "Intersecting a translated ray with a ray" $
       let ray = Ray (point 0 0 (-5)) (vector 0 0 1)
-          sphere = setTransformation (translation 5 0 0) defaultSphere
-      in intersect sphere ray @?~ []
+          s = Object (setTransform (translation 5 0 0) defaultSphere)
+      in intersect s ray @?~ []
   ]

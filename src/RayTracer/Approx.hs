@@ -2,6 +2,9 @@
 
 module RayTracer.Approx where
 
+epsilon :: Double
+epsilon = 0.00001
+
 class Approx a where
   approx :: a -> a -> Bool
   (=~) :: a -> a -> Bool
@@ -11,7 +14,7 @@ class Approx a where
 
 instance Approx Double where
   approx :: Double -> Double -> Bool
-  approx a b = abs (a - b) < 0.00001
+  approx a b = abs (a - b) < epsilon
 
 instance Approx a => Approx (Maybe a) where
   approx Nothing Nothing = True

@@ -7,22 +7,22 @@ import RayTracer.Canvas
 import RayTracer.Color
 import RayTracer.Light
 import RayTracer.Matrix
-import RayTracer.Sphere
+import RayTracer.Shape.Sphere
 import RayTracer.Tuple
 import RayTracer.World
-
-sphereTransform :: Matrix
-sphereTransform = translation 1.5 0.5 (-0.5) |*| scaling 1.5 1.5 1.5
-
-sphereMaterial :: Material
-sphereMaterial = defaultMaterial
-  { color = Color 1 0.3 0.1
-  , diffuse = 0.7
-  , specular = 0.3
-  }
+import RayTracer.Ray
 
 sphere :: Sphere
-sphere = Sphere sphereTransform sphereMaterial
+sphere =
+  let
+    trans = translation 1.5 0.5 (-0.5) |*| scaling 1.5 1.5 1.5
+    mat =
+      defaultMaterial
+        { color = Color 1 0.3 0.1
+        , diffuse = 0.7
+        , specular = 0.3
+        }
+  in Sphere (Value trans) (Value mat)
 
 light :: Light
 light = pointLight (point (-10) 10 (-10)) (Color 1 1 1)

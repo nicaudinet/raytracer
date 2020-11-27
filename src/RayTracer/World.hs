@@ -2,11 +2,12 @@ module RayTracer.World where
 
 import GHC.Exts (sortWith)
 
+import RayTracer.Approx (epsilon)
 import RayTracer.Matrix
 import RayTracer.Tuple
 import RayTracer.Color
-import RayTracer.Sphere
-import RayTracer.Light
+import RayTracer.Shape.Sphere
+import RayTracer.Light as L
 import RayTracer.Ray as R
 
 data World = World
@@ -29,20 +30,20 @@ defaultWorld = World [Object sphere1, Object sphere2] (Just light)
       }
 
     sphere1 :: Sphere
-    sphere1 = defaultSphere { material = material1 }
+    sphere1 = setMaterial material1 defaultSphere
 
     transformation2 :: Matrix
     transformation2 = scaling 0.5 0.5 0.5
 
     sphere2 :: Sphere
-    sphere2 = defaultSphere { transformation = transformation2 }
+    sphere2 = setTransform transformation2 defaultSphere
 
     light :: Light
     light = pointLight (point (-10) 10 (-10)) (Color 1 1 1)
 
 intersectWorld :: Ray -> World -> [Intersection]
 intersectWorld ray =
-  sortWith time . concat . map (flip intersect ray . unObject) . objects
+  sortWith time . concat . map (`intersect` ray) . objects
 
 data Computation = Computation
   { compTime :: Double
@@ -51,6 +52,7 @@ data Computation = Computation
   , compEye :: Tuple
   , compNormal :: Tuple
   , compInside :: Bool
+  , compOverPoint :: Tuple
   }
 
 prepareComputations :: Intersection -> Ray -> Computation
@@ -68,7 +70,26 @@ prepareComputations (Intersection obj t) ray =
       , compEye = eye
       , compNormal = if cond then neg normal else normal
       , compInside = cond
+      , compOverPoint = pos `add` (normal `mul` epsilon)
       }
+
+isShadowed :: World -> Tuple -> Shadow
+isShadowed world p =
+  case lightSource world of
+    Nothing -> NotInShadow
+    Just light ->
+      case hit (intersectWorld (shadowRay light) world) of
+        Nothing -> NotInShadow
+        Just intersection ->
+          if time intersection < magnitude (distance light)
+          then InShadow
+          else NotInShadow
+  where
+    distance :: Light -> Tuple
+    distance = (`sub` p) . L.position
+
+    shadowRay :: Light -> Ray
+    shadowRay = Ray p . normalize . distance
 
 shadeHit :: World -> Computation -> Color
 shadeHit world comp =
@@ -76,11 +97,12 @@ shadeHit world comp =
     Nothing -> Color 0 0 0
     Just light ->
       lighting
-        (material . unObject . compObject $ comp)
+        (material . compObject $ comp)
         light
-        (compPoint comp)
+        (compOverPoint comp)
         (compEye comp)
         (compNormal comp)
+        (isShadowed world (compOverPoint comp))
 
 colorAt :: World -> Ray -> Color
 colorAt world ray =
