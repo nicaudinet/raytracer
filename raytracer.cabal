@@ -93,6 +93,20 @@ executable three-sphere-scene
   default-language:
     Haskell2010
 
+executable sphere-and-plane-scene
+  main-is:
+    SphereAndPlane.hs
+  hs-source-dirs:
+    exe
+  build-depends:
+      base >=4.12 && <4.13
+    , raytracer
+  ghc-options:
+    -Wall
+    -Wno-partial-type-signatures
+  default-language:
+    Haskell2010
+
 executable benchmark-sphere
   main-is:
     Sphere.hs
