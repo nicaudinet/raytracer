@@ -23,6 +23,7 @@ library
     RayTracer.Light
     RayTracer.Matrix
     RayTracer.Ray
+    RayTracer.Shape.Plane
     RayTracer.Shape.Sphere
     RayTracer.Tuple
     RayTracer.World
@@ -121,6 +122,7 @@ test-suite raytracer-test
     Test.RayTracer.Matrix
     Test.RayTracer.Ray
     Test.RayTracer.Shape
+    Test.RayTracer.Plane
     Test.RayTracer.Sphere
     Test.RayTracer.Tuple
     Test.RayTracer.World

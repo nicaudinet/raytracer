@@ -11,6 +11,7 @@ import qualified Test.RayTracer.Sphere as Sphere
 import qualified Test.RayTracer.World as World
 import qualified Test.RayTracer.Camera as Camera
 import qualified Test.RayTracer.Shape as Shape
+import qualified Test.RayTracer.Plane as Plane
 
 main :: IO ()
 main = defaultMain tests
@@ -27,4 +28,5 @@ tests = testGroup "Tests"
   , World.tests
   , Camera.tests
   , Shape.tests
+  , Plane.tests
   ]
