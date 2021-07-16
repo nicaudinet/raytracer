@@ -107,6 +107,25 @@ executable sphere-and-plane-scene
   default-language:
     Haskell2010
 
+executable dev
+  main-is:
+    Dev.hs
+  -- other-modules:
+  ghc-options:
+    -Wall
+    -Wno-partial-type-signatures
+    -O2
+    -threaded
+  build-depends:
+      base >=4.14 && <4.15
+    , optional-args
+    , text
+    , turtle
+  hs-source-dirs:
+    exe
+  default-language:
+    Haskell2010
+
 executable benchmark-sphere
   main-is:
     Sphere.hs
