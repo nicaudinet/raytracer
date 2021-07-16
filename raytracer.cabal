@@ -33,7 +33,7 @@ library
     -Wall
     -Wno-partial-type-signatures
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
   default-language:
     Haskell2010
 
@@ -43,7 +43,7 @@ executable cannonball
   hs-source-dirs:
     exe
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
   ghc-options:
     -Wall
@@ -57,7 +57,7 @@ executable clock-points
   hs-source-dirs:
     exe
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
   ghc-options:
     -Wall
@@ -71,7 +71,7 @@ executable simple-sphere
   hs-source-dirs:
     exe
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
   ghc-options:
     -Wall
@@ -85,7 +85,7 @@ executable three-sphere-scene
   hs-source-dirs:
     exe
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
   ghc-options:
     -Wall
@@ -99,7 +99,7 @@ executable sphere-and-plane-scene
   hs-source-dirs:
     exe
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
   ghc-options:
     -Wall
@@ -113,7 +113,7 @@ executable benchmark-sphere
   hs-source-dirs:
     bench
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , criterion
     , raytracer
   ghc-options:
@@ -143,7 +143,7 @@ test-suite raytracer-test
   hs-source-dirs:
     test
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.14 && <4.15
     , raytracer
     , tasty
     , tasty-hunit
