@@ -13,6 +13,13 @@ instance Approx Color where
   approx (Color r1 g1 b1) (Color r2 g2 b2) =
     (approx r1 r2) && (approx g1 g2) && (approx b1 b2)
 
+instance Semigroup Color where
+  (<>) = addColor
+
+instance Monoid Color where
+  mempty = black
+  
+
 -- * Operations
 
 addColor :: Color -> Color -> Color
