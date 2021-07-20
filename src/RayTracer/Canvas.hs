@@ -5,9 +5,10 @@
 module RayTracer.Canvas where
 
 import Data.List
+import GHC.Stack (HasCallStack)
 import RayTracer.Color
 
-newtype Canvas = Canvas [[Color]]
+newtype Canvas = Canvas { unCanvas :: [[Color]] }
 
 newtype PPM = PPM { unPPM :: String }
 
@@ -34,11 +35,18 @@ mapCanvas f (Canvas canvas) = fmap (fmap f) canvas
 pixelAt :: Int -> Int -> Canvas -> Color
 pixelAt w h (Canvas canvas) = (canvas !! h) !! w
 
-writePixel :: Int -> Int -> Color -> Canvas -> Canvas
-writePixel w h color (Canvas canvas) =
-  let (preRows, row:postRows) = splitAt h canvas
-      (preCols, _:postCols) = splitAt w row
-  in Canvas $ preRows <> [preCols <> [color] <> postCols] <> postRows
+writePixel :: HasCallStack => Int -> Int -> Color -> Canvas -> Canvas
+writePixel w h color canvas
+  | w < 0 = error "width < 0"
+  | h < 0 = error "height < 0"
+  | w >= width canvas = error . mconcat $
+    ["w >= width canvas: ", show w, " >= ", show (width canvas)]
+  | h >= height canvas = error . mconcat $
+    [ "h >= height canvas): ", show h, " >= ", show (height canvas)]
+  | otherwise =
+    let (preRows, row:postRows) = splitAt h (unCanvas canvas)
+        (preCols, _:postCols) = splitAt w row
+    in Canvas $ preRows <> [preCols <> [color] <> postCols] <> postRows
 
 canvasToPPM :: Canvas -> PPM
 canvasToPPM canvas@(Canvas pixels) =
