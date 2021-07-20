@@ -59,6 +59,7 @@ executable clock-points
     exe
   build-depends:
       base >=4.14 && <4.15
+    , process
     , raytracer
   ghc-options:
     -Wall

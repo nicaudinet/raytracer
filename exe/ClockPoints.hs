@@ -1,9 +1,10 @@
-module ClockPoints where
+module Main where
 
 import RayTracer.Tuple
 import RayTracer.Canvas
 import RayTracer.Color
 import RayTracer.Matrix hiding (height, width)
+import System.Process (callProcess)
 
 coord :: Tuple -> (Double, Double)
 coord (Tuple _w x y _z) = (x, y)
@@ -17,10 +18,12 @@ pointsToPPM canvas points =
       (map coord points)
 
 main :: IO ()
-main =
+main = do
   let
     rotate n = rotationZ (n * (pi / 6))
     translate =  translation 250 250 0
     move n =  (translate |*| rotate n) |* point 200 0 0
     image = pointsToPPM (emptyCanvas 500 500) (map move [0 .. 11])
-  in savePPM "images/clock.ppm" image
+    imageName = "images/clock.ppm" 
+  savePPM imageName image
+  callProcess "feh" [imageName]
